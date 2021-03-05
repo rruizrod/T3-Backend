@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
 const getAge = (dob) => {
-  const currDate = new Date();
-  return currDate.getFullYear - dob.getFullYear
+  var birthday = +new Date(dob);
+  return ~~((Date.now() - birthday) / (31557600000));
 }
 
 const userSchema = new mongoose.Schema({

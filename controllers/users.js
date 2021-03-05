@@ -21,7 +21,7 @@ usersRouter.post('/', async (request, response) => {
         username: body.username,
         email: body.email,
         passwordHash,
-        dob: body.dob,
+        dob: new Date(body.dob),
         matches: [],
         interests: []
     })
@@ -46,6 +46,15 @@ usersRouter.put('/:id', async (request, response) => {
   const updatedUser = await user.save()
 
   response.json(updatedUser)
+})
+
+//--- ENDPOINT: Get User by ID ---
+usersRouter.get('/:id', async (request, response) => {
+  const id = request.params.id
+
+  const user = await User.findById(id)
+
+  response.json(user)
 })
 
 //--- ENDPOINT: Delete User by ID ---
