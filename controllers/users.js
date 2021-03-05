@@ -36,12 +36,12 @@ usersRouter.put('/:id', async (request, response) => {
   const body = request.body
   const user = await User.findById(request.params.id)
 
-  user.email = body.email
-  user.matches = body.matches
-  user.interests = body.interests
-  user.school = body.school
-  user.major = body.major
-  user.job = body.job
+  user.email = body.email || user.email
+  user.matches = body.matches || user.matches
+  user.interests = body.interests || user.interests
+  user.school = body.school || user.school
+  user.major = body.major || user.major
+  user.job = body.job || user.job
 
   const updatedUser = await user.save()
 

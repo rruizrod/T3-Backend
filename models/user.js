@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     matches: [
         {
             type: mongoose.Schema.Types.ObjectID,
-            ref: 'Users'
+            ref: 'User'
         }
     ],
     interests: [ String ],
