@@ -7,6 +7,7 @@ const usersRouter = require('./controllers/users')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
+const loginRouter = require('./controllers/login')
 
 //logger.info('Connecting to', config.MONGODB_URI)
 
@@ -23,6 +24,7 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 
 //  --  ADD ROUTERS HERE FOR DIFFERENT ENDPOINTS ---
+app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 
 app.use(middleware.unknownEndpoint)
