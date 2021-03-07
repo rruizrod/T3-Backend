@@ -5,7 +5,6 @@ const User = require('../models/user')
 //--- ENDPOINT: Get Users List ---
 usersRouter.get('/', async (request, response) => {
     const users = await User.find({}).populate('matches')
-    
     response.json(users)
 })
 
@@ -53,7 +52,7 @@ usersRouter.put('/:id', async (request, response) => {
 usersRouter.get('/:id', async (request, response) => {
   const id = request.params.id
 
-  const user = await User.findById(id)
+  const user = await User.findById(id).populate('matches')
 
   response.json(user)
 })
