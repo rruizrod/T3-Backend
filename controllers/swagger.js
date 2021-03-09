@@ -1,3 +1,5 @@
+const swaggerRouter = require('express').Router();
+const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
 const swaggerOptions = {
@@ -8,11 +10,16 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'Social Media Backend API'
     },
-    servers: [{url: 't3-dev.rruiz.dev/'}]
+    servers: [
+      {url: 't3-dev.rruiz.dev/'}, 
+      {url: 'http://localhost:3001'}]
   },
   apis: ['./controllers/*.js']
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
-module.exports =  swaggerDocs;
+swaggerRouter.use('/', swaggerUi.serve);
+swaggerRouter.get('/', swaggerUi.setup(swaggerDocs));
+
+module.exports = swaggerRouter
