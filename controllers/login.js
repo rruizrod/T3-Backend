@@ -3,6 +3,48 @@ const bcrypt = require('bcrypt')
 const loginRouter = require('express').Router()
 const User = require('../models/user')
 
+/**
+ * @swagger
+ * tags:
+ *    name: Login
+ *    description: Login API
+ */
+
+/**
+ * @swagger
+ * /api/login:
+ *    post:
+ *      summary: Logs user in.
+ *      tags: [Login]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              properties:
+ *               username:
+ *                  type: string
+ *                  description: Users username.
+ *               password:
+ *                  type: string
+ *                  description: Users password.
+ *      responses:
+ *        200:
+ *          description: User logged in.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                properties:
+ *                  token:
+ *                    type: string
+ *                    description: JWT token for later use.
+ *                  username:
+ *                    type: string
+ *                    description: Users username.
+ *                  name:
+ *                    type: string
+ *                    description: Users name.
+ */
 loginRouter.post('/', async (request, response) => {
   const body = request.body
 
