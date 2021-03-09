@@ -8,6 +8,8 @@ const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 const loginRouter = require('./controllers/login')
+const swaggerUI = require('swagger-ui-express')
+const swaggerDocs = require('./utils/docs')
 
 //logger.info('Connecting to', config.MONGODB_URI)
 
@@ -24,6 +26,7 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 
 //  --  ADD ROUTERS HERE FOR DIFFERENT ENDPOINTS ---
+app.use('/api', swaggerUI.serve, swaggerUI.setup(swaggerDocs))
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 
