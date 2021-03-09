@@ -26,7 +26,7 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 
 //  --  ADD ROUTERS HERE FOR DIFFERENT ENDPOINTS ---
-app.use('/api', swaggerUI.serve, swaggerUI.setup(swaggerDocs))
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {explorer: true}))
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 
