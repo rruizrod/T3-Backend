@@ -146,7 +146,7 @@ usersRouter.post('/', async (request, response) => {
  *            type: string
  *      responses:
  *        200:
- *          description: Found User. Returned.
+ *          description: Found User. Returns User object.
  *          content:
  *            application/json:
  *              schema:
@@ -182,7 +182,7 @@ usersRouter.get('/:id', async (request, response) => {
  *              $ref: '#/components/schema/User'
  *      responses:
  *        200:
- *          description: User updated. Returned updated User.
+ *          description: User updated. Returns updated User.
  *          content:
  *            application/json:
  *              schema:
@@ -220,7 +220,7 @@ usersRouter.put('/:id', async (request, response) => {
  *            type: string
  *      responses:
  *        204:
- *          description: Found User. Deleted.
+ *          description: Found User. Deleted from DB.
  */
 usersRouter.delete('/:id', async (request, response) => {
     await User.findByIdAndRemove(request.params.id)
