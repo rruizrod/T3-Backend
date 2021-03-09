@@ -8,11 +8,8 @@ const swaggerOptions = {
     info: {
       title: 'T3 KnightHacks Backend API',
       version: '1.0.0',
-      description: 'Social Media Backend API'
-    },
-    servers: [
-      {url: 't3-dev.rruiz.dev/'}, 
-      {url: 'http://localhost:3001'}]
+      description: 'Social Media Backend API. To make calls to API use url t3-dev.rruiz.dev/{route}'
+    }
   },
   apis: ['./controllers/*.js']
 };
