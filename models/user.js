@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
       type: Date,
       required: true,
     },
+    bio: {
+      type: String,
+      maxLength: 140,
+    },
     matches: [
         {
             type: mongoose.Schema.Types.ObjectID,
@@ -34,6 +38,8 @@ const userSchema = new mongoose.Schema({
     school: String,
     major: String,
     job: String,
+    country: String,
+    city: String,
 })
 
 userSchema.set('toJSON', {
