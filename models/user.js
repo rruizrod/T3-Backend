@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       maxLength: 140,
     },
+    image: {
+      type: mongoose.Schema.Types.ObjectID,
+      ref: 'Image'
+    },
     matches: [
         {
             type: mongoose.Schema.Types.ObjectID,

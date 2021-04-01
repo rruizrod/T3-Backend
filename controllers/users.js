@@ -122,7 +122,13 @@ usersRouter.post('/', async (request, response) => {
         passwordHash,
         dob: new Date(body.dob),
         matches: [],
-        interests: []
+        bio: body.bio || "",
+        interests: body.interests || [],
+        school = body.school || "",
+        major = body.major || "",
+        job = body.job || "",
+        country = body.country || "",
+        city = body.city || "",
     })
     
     const savedUser = await user.save()
