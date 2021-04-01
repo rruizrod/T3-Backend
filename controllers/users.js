@@ -87,17 +87,22 @@ usersRouter.get('/', async (request, response) => {
  *                name:
  *                  type: string
  *                  description: Users name.
+ *                  required: true
  *                username:
  *                  type: string
  *                  description: Users username.
+ *                  required: true
  *                email:
  *                  type: string
+ *                  required: true
  *                  description: Users email.
  *                dob:
  *                  type: string
+ *                  required: true
  *                  description: Users birthday in form MMDDYYYY.
  *                password:
  *                  type: string
+ *                  required: true
  *                  description: Users password.
  *                
  *      responses:
