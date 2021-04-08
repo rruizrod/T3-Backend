@@ -40,6 +40,16 @@ const User = require('../models/user')
  *          age:
  *            type: integer
  *            description: The generated age for the user.
+ *          school:
+ *            type: string
+ *          major:
+ *            type: string
+ *          job:
+ *            type: string
+ *          country:
+ *            type: string
+ *          city:
+ *            type: string
  */
 
 /**
@@ -87,19 +97,42 @@ usersRouter.get('/', async (request, response) => {
  *                name:
  *                  type: string
  *                  description: Users name.
+ *                  required: true
  *                username:
  *                  type: string
  *                  description: Users username.
+ *                  required: true
  *                email:
  *                  type: string
+ *                  required: true
  *                  description: Users email.
  *                dob:
  *                  type: string
+ *                  required: true
  *                  description: Users birthday in form MMDDYYYY.
  *                password:
  *                  type: string
+ *                  required: true
  *                  description: Users password.
- *                
+ *                bio:
+ *                  type: string
+ *                  description: Users profile bio.
+ *                interests:
+ *                  type: array
+ *                  items:
+ *                    type: string
+ *                    description: Interest.
+ *                  description: Array of Users interests.
+ *                school:
+ *                  type: string
+ *                major:
+ *                  type: string
+ *                job:
+ *                  type: string
+ *                country:
+ *                  type: string
+ *                city:
+ *                  type: string
  *      responses:
  *        200:
  *          description: User created successfully. Returns User Object.
@@ -124,11 +157,11 @@ usersRouter.post('/', async (request, response) => {
         matches: [],
         bio: body.bio || "",
         interests: body.interests || [],
-        school = body.school || "",
-        major = body.major || "",
-        job = body.job || "",
-        country = body.country || "",
-        city = body.city || "",
+        school: body.school || "",
+        major: body.major || "",
+        job: body.job || "",
+        country: body.country || "",
+        city: body.city || "",
     })
     
     const savedUser = await user.save()
