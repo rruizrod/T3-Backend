@@ -6,7 +6,8 @@
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development nodemon index.js",
-    "test": "NODE_ENV=test jest --verbose --runInBand"
+    "test": "NODE_ENV=test jest --verbose --runInBand",
+    "devStart": "nodemon socket_io.js"
   },
   "author": "Ricardo Ruiz",
   "license": "UNLICENSED",
@@ -26,6 +27,7 @@
     "mongoose-unique-validator": "^2.0.3",
     "multer": "^1.4.2",
     "multer-gridfs-storage": "^4.2.0",
+    "socket.io": "^4.0.1",
     "swagger-jsdoc": "^4.2.0",
     "swagger-ui-express": "^4.1.6"
   }
