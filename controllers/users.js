@@ -81,6 +81,34 @@ usersRouter.get('/', async (request, response) => {
     response.json(users)
 })
 
+//--- ENDPOINT: Check username availability
+/**
+ * @swagger
+ * /api/users/{username}:
+ *    get:
+ *      summary: Returns username availability.
+ *      tags: [Users]
+ *      parameters:
+ *        - in: path
+ *          name: username
+ *          required: true
+ *          description: Username to check.
+ *          schema:
+ *            type: string
+ *      responses:
+ *        200:
+ *          description: Username is available.
+ *        500:
+ *          description: Username not available.
+ *              
+ */
+usersRouter.get('/:username', async (request, response) => {
+    const user =  await User.findOne({username: request.params.username});
+    if(!user) response.status(200).end();
+
+    response.status(500).send({ message: "Username already exists." })
+})
+
 //--- ENDPOINT: Create User ---
 /**
  * @swagger
