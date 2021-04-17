@@ -44,6 +44,9 @@ const User = require('../models/user')
  *                  name:
  *                    type: string
  *                    description: Users name.
+ *                  user:
+ *                    type: object
+ *                    description: User Object.
  */
 loginRouter.post('/', async (request, response) => {
   const body = request.body
