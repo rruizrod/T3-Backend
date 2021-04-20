@@ -228,6 +228,52 @@ usersRouter.get('/:id', async (request, response) => {
   response.json(user)
 })
 
+//--- ENDPOINT: Update User matches ---
+/**
+ * @swagger
+ * /api/users/{id}/match/{match}:
+ *    post:
+ *      summary: Adds match to users matches array.
+ *      tags: [Users]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          description: Users ID from database.
+ *          schema:
+ *            type: string
+ *        - in: path
+ *          name: match
+ *          required: true
+ *          description: Matches ID
+ *          schema:
+ *            type: string
+ *      responses:
+ *        200:
+ *          description: User updates. Responds with user object if complete match.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schema/User'
+ */
+usersRouter.post('/:id/match/:match', async (request, response) => {
+  const id = request.params.id
+  const match = request.params.match
+
+  const user = await User.findById(id)
+  const matchedUser = await User.findById(match)
+
+  user.matches = [...user.matches, match]
+
+  user.save()
+
+  if(matchedUser.matches.includes(id)){
+    response.send({message: "You got a match!", match: matchedUser.toJSON()})
+  }
+
+  response.send({message: "User liked!"})
+})
+
 //--- ENDPOINT: Update User Profile by ID ---
 /**
  * @swagger
@@ -261,7 +307,6 @@ usersRouter.put('/:id', async (request, response) => {
   const user = await User.findById(request.params.id)
 
   user.email = body.email || user.email
-  user.matches = body.matches || user.matches
   user.interests = body.interests || user.interests
   user.school = body.school || user.school
   user.major = body.major || user.major
