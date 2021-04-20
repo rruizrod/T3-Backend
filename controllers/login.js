@@ -35,6 +35,8 @@ const User = require('../models/user')
  *            application/json:
  *              schema:
  *                properties:
+
+ 
  *                  token:
  *                    type: string
  *                    description: JWT token for later use.
