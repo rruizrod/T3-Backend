@@ -85,7 +85,7 @@ usersRouter.get('/', async (request, response) => {
 //--- ENDPOINT: Check username availability
 /**
  * @swagger
- * /api/users/{username}:
+ * /api/users/username/{username}:
  *    get:
  *      summary: Returns username availability.
  *      tags: [Users]
@@ -103,7 +103,7 @@ usersRouter.get('/', async (request, response) => {
  *          description: Username not available.
  *              
  */
-usersRouter.get('/:username', async (request, response) => {
+usersRouter.get('username/:username', async (request, response) => {
     const user =  await User.findOne({username: request.params.username});
     if(!user) response.status(200).end();
 
