@@ -307,10 +307,13 @@ usersRouter.put('/:id', async (request, response) => {
   const user = await User.findById(request.params.id)
 
   user.email = body.email || user.email
+  user.bio = body.bio || user.bio
   user.interests = body.interests || user.interests
   user.school = body.school || user.school
   user.major = body.major || user.major
   user.job = body.job || user.job
+  user.country = body.country || user.country
+  user.city = body.city || user.city
 
   const updatedUser = await user.save()
 
