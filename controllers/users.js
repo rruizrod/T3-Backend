@@ -103,7 +103,7 @@ usersRouter.get('/', async (request, response) => {
  *          description: Username not available.
  *              
  */
-usersRouter.get('username/:username', async (request, response) => {
+usersRouter.get('/username/:username', async (request, response) => {
     const user =  await User.findOne({username: request.params.username});
     if(!user) response.status(200).end();
 
