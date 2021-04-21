@@ -263,7 +263,8 @@ usersRouter.post('/:id/match/:match', async (request, response) => {
   const user = await User.findById(id)
   const matchedUser = await User.findById(match)
 
-  user.matches = [...user.matches, match]
+  if(!user.matches.includes(match))
+    user.matches = [...user.matches, match]
 
   user.save()
 
