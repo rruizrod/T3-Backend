@@ -255,10 +255,14 @@ usersRouter.get('/:id', async (request, response) => {
  *            application/json:
  *              schema:
  *                $ref: '#/components/schema/User'
+ *        500:
+ *          description: Something went wrong, User matched with themselves.
  */
 usersRouter.post('/:id/match/:match', async (request, response) => {
   const id = request.params.id
   const match = request.params.match
+
+  if(id === match) return response.status(500).end()
 
   const user = await User.findById(id)
   const matchedUser = await User.findById(match)
