@@ -107,7 +107,7 @@ usersRouter.get('/username/:username', async (request, response) => {
     const user =  await User.findOne({username: request.params.username});
     if(!user) response.status(200).end();
 
-    response.status(500).send({ message: "Username already exists." })
+    response.status(500).send({ message: "Username already exists." }).end()
 })
 
 //--- ENDPOINT: Create User ---
@@ -195,7 +195,7 @@ usersRouter.post('/', async (request, response) => {
     
     const savedUser = await user.save()
 
-    response.json(savedUser)
+    return response.json(savedUser)
 })
 
 //--- ENDPOINT: Get User by ID ---
@@ -225,7 +225,7 @@ usersRouter.get('/:id', async (request, response) => {
 
   const user = await User.findById(id)
 
-  response.json(user)
+  return response.json(user)
 })
 
 //--- ENDPOINT: Update User matches ---
@@ -269,10 +269,10 @@ usersRouter.post('/:id/match/:match', async (request, response) => {
   user.save()
 
   if(matchedUser.matches.includes(id)){
-    response.send({message: "You got a match!", match: matchedUser.toJSON()})
+    return response.send({message: "You got a match!", match: matchedUser.toJSON()})
   }
 
-  response.send({message: "User liked!"})
+  return response.send({message: "User liked!"})
 })
 
 //--- ENDPOINT: Update User Profile by ID ---
@@ -318,7 +318,7 @@ usersRouter.put('/:id', async (request, response) => {
 
   const updatedUser = await user.save()
 
-  response.json(updatedUser)
+  return response.json(updatedUser)
 })
 
 //--- ENDPOINT: Delete User by ID ---
@@ -342,7 +342,7 @@ usersRouter.put('/:id', async (request, response) => {
 usersRouter.delete('/:id', async (request, response) => {
     await User.findByIdAndRemove(request.params.id)
 
-    response.status(204).end()
+    return response.status(204).end()
 })
 
 module.exports = usersRouter
