@@ -105,9 +105,9 @@ usersRouter.get('/', async (request, response) => {
  */
 usersRouter.get('/username/:username', async (request, response) => {
     const user =  await User.findOne({username: request.params.username});
-    if(!user) response.status(200).end();
+    if(!user) return response.status(200).end();
 
-    response.status(500).send({ message: "Username already exists." }).end()
+    return response.status(500).send({ message: "Username already exists." }).end()
 })
 
 //--- ENDPOINT: Create User ---
