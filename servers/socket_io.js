@@ -1,21 +1,37 @@
-const io = require('socket.io')(3000)
+const express = require('express')
+var http = require('http')
+const app = express()
+const port = process.env.PORT || 5000
+var server = http.createServer(app)
+const io = require('socket.io')(server)
+var clients = {}
 
-const users = {}
-
-io.on('connection', socket =>
+// middleware
+app.use(express.json())
+io.on("connection", socket =>
 {
-  socket.on('new-user', name =>
-  {
-    users[socket.id] = name
-    socket.broadcast.emit('user-connected', name)
+
+  console.log("connected")
+  console.log(socket.id, 'has joined')
+
+  // receive from frontend client (socket.on() ...)
+  socket.on('/test', (msg) => console.log(msg))
+  socket.on('signin', (id) => {
+    console.log(id)
+    clients[id] = socket
   })
-  socket.on('send-chat-message', message =>
-  {
-    socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
-  })
-  socket.on('disconnect', () =>
-  {
-    socket.broadcast.emit('user-disconnected', users[socket.id])
-    delete users[socket.id]
+  socket.on('message', (msg) =>{
+    console.log(msg)
+    let targetId = msg.targetId
+
+    // null check
+    if (clients[targetId]) {clients[targetId].emit('message',msg)}
+
   })
 })
+server.listen(port, "0.0.0.0", () => {
+  console.log("server started")
+})
+
+
+
