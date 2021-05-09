@@ -77,8 +77,37 @@ const User = require('../models/user')
  *                  $ref: '#/components/schema/User'
  */
 usersRouter.get('/', async (request, response) => {
-    const users = await User.find({}).populate('matches')
+    const users = await User.find({})
+
     response.json(users)
+})
+
+//--- ENDPOINT: Check username availability
+/**
+ * @swagger
+ * /api/users/username/{username}:
+ *    get:
+ *      summary: Returns username availability.
+ *      tags: [Users]
+ *      parameters:
+ *        - in: path
+ *          name: username
+ *          required: true
+ *          description: Username to check.
+ *          schema:
+ *            type: string
+ *      responses:
+ *        200:
+ *          description: Username is available.
+ *        500:
+ *          description: Username not available.
+ *              
+ */
+usersRouter.get('/username/:username', async (request, response) => {
+    const user =  await User.findOne({username: request.params.username});
+    if(!user) return response.status(200).end();
+
+    return response.status(500).send({ message: "Username already exists." }).end()
 })
 
 //--- ENDPOINT: Create User ---
@@ -166,7 +195,7 @@ usersRouter.post('/', async (request, response) => {
     
     const savedUser = await user.save()
 
-    response.json(savedUser)
+    return response.json(savedUser)
 })
 
 //--- ENDPOINT: Get User by ID ---
@@ -194,9 +223,60 @@ usersRouter.post('/', async (request, response) => {
 usersRouter.get('/:id', async (request, response) => {
   const id = request.params.id
 
-  const user = await User.findById(id).populate('matches')
+  const user = await User.findById(id)
 
-  response.json(user)
+  return response.json(user)
+})
+
+//--- ENDPOINT: Update User matches ---
+/**
+ * @swagger
+ * /api/users/{id}/match/{match}:
+ *    post:
+ *      summary: Adds match to users matches array.
+ *      tags: [Users]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          description: Users ID from database.
+ *          schema:
+ *            type: string
+ *        - in: path
+ *          name: match
+ *          required: true
+ *          description: Matches ID
+ *          schema:
+ *            type: string
+ *      responses:
+ *        200:
+ *          description: User updates. Responds with user object if complete match.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schema/User'
+ *        500:
+ *          description: Something went wrong, User matched with themselves.
+ */
+usersRouter.post('/:id/match/:match', async (request, response) => {
+  const id = request.params.id
+  const match = request.params.match
+
+  if(id === match) return response.status(500).end()
+
+  const user = await User.findById(id)
+  const matchedUser = await User.findById(match)
+
+  if(!user.matches.includes(match))
+    user.matches = [...user.matches, match]
+
+  user.save()
+
+  if(matchedUser.matches.includes(id)){
+    return response.send({message: "You got a match!", match: matchedUser.toJSON()})
+  }
+
+  return response.send({message: "User liked!"})
 })
 
 //--- ENDPOINT: Update User Profile by ID ---
@@ -232,15 +312,17 @@ usersRouter.put('/:id', async (request, response) => {
   const user = await User.findById(request.params.id)
 
   user.email = body.email || user.email
-  user.matches = body.matches || user.matches
+  user.bio = body.bio || user.bio
   user.interests = body.interests || user.interests
   user.school = body.school || user.school
   user.major = body.major || user.major
   user.job = body.job || user.job
+  user.country = body.country || user.country
+  user.city = body.city || user.city
 
   const updatedUser = await user.save()
 
-  response.json(updatedUser)
+  return response.json(updatedUser)
 })
 
 //--- ENDPOINT: Delete User by ID ---
@@ -264,7 +346,7 @@ usersRouter.put('/:id', async (request, response) => {
 usersRouter.delete('/:id', async (request, response) => {
     await User.findByIdAndRemove(request.params.id)
 
-    response.status(204).end()
+    return response.status(204).end()
 })
 
 module.exports = usersRouter

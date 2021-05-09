@@ -35,6 +35,8 @@ const User = require('../models/user')
  *            application/json:
  *              schema:
  *                properties:
+
+ 
  *                  token:
  *                    type: string
  *                    description: JWT token for later use.
@@ -44,6 +46,9 @@ const User = require('../models/user')
  *                  name:
  *                    type: string
  *                    description: Users name.
+ *                  user:
+ *                    type: object
+ *                    description: User Object.
  */
 loginRouter.post('/', async (request, response) => {
   const body = request.body
@@ -66,9 +71,9 @@ loginRouter.post('/', async (request, response) => {
 
   const token = jwt.sign(userForToken, process.env.SECRET)
 
-  response
+  return response
     .status(200)
-    .send({ token, username: user.username, name: user.name })
+    .send({ token, username: user.username, name: user.name, user: user })
 })
 
 module.exports = loginRouter
