@@ -1,8 +1,7 @@
 const express = require('express')
-var http = require('http')
 const app = express()
+var server = require('http').createServer(app)
 const port = process.env.PORT || 5000
-var server = http.createServer(app)
 const io = require('socket.io')(server)
 var clients = {}
 
@@ -10,7 +9,6 @@ var clients = {}
 app.use(express.json())
 io.on("connection", socket =>
 {
-
   console.log("connected")
   console.log(socket.id, 'has joined')
 
@@ -30,7 +28,7 @@ io.on("connection", socket =>
   })
 })
 server.listen(port, "0.0.0.0", () => {
-  console.log("server started")
+  console.log(`server started on port ${port}`)
 })
 
 
