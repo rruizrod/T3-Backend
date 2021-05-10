@@ -13,17 +13,22 @@ io.on("connection", socket =>
   console.log(socket.id, 'has joined')
 
   // receive from frontend client (socket.on() ...)
-  socket.on('/test', (msg) => console.log(msg))
+  // socket.on('/test', (msg) => console.log(msg))
   socket.on('signin', (id) => {
-    console.log(id)
+    console.log(`${id} has signed in to dm chat`)
     clients[id] = socket
+    console.log(clients);
   })
-  socket.on('message', (msg) =>{
+
+  // message from sender
+  socket.on('message', (msg) => {
     console.log(msg)
     let targetId = msg.targetId
+    // clients[targetId] = socket
 
     // null check
     if (clients[targetId]) {clients[targetId].emit('message',msg)}
+    else { console.log('client is null'); }
 
   })
 })
