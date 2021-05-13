@@ -4,7 +4,6 @@ var server = require('http').createServer(app)
 const port = process.env.PORT || 5000
 const io = require('socket.io')(server)
 var clients = {}
-var lstOfMsgs = []
 
 // client id as keys and list of messages as values
 // the lists will be filled with pending messages
@@ -20,7 +19,8 @@ io.on("connection", socket =>
 
   // receive from frontend client (socket.on() ...)
   // socket.on('/test', (msg) => console.log(msg))
-  socket.on('signin', (id) => {
+  socket.on('signin', (id) =>
+  {
     console.log(`${id} has signed in to dm chat`)
     clients[id] = socket
     // console.log(clients);
@@ -40,7 +40,7 @@ io.on("connection", socket =>
     if (clientMessages[id].length > 0)
     {
       console.log(`loading messages to user ${id}`)
-      clients[id].emit('message',clientMessages[id])
+      clients[id].emit('message', clientMessages[id])
 
       // clear array
       clientMessages[id].splice(0, clientMessages[id].length)
@@ -48,7 +48,8 @@ io.on("connection", socket =>
   })
 
   // message from sender
-  socket.on('message', (msg) => {
+  socket.on('message', (msg) =>
+  {
     // console.log(`type of msg is ${typeof(msg)}`)
     let targetId = msg.targetId
     // clients[targetId] = socket
@@ -80,14 +81,16 @@ io.on("connection", socket =>
 
   })
 
-  socket.on('signedout', (id) => {
+  socket.on('signedout', (id) =>
+  {
     console.log(`${id} has signed out of dm chat`)
     delete clients[id]
     // console.log(clients);
   })
 
 })
-server.listen(port, "0.0.0.0", () => {
+server.listen(port, "0.0.0.0", () =>
+{
   console.log(`server started on port ${port}`)
 })
 
