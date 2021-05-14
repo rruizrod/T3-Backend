@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
             ref: 'User'
         }
     ],
+    backlog: {
+      type: mongoose.Schema.Types.ObjectID,
+      ref: 'Backlog'
+    },
     interests: [ String ],
     school: String,
     major: String,
