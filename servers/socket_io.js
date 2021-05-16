@@ -3,12 +3,33 @@ const app = express()
 var server = require('http').createServer(app)
 const port = process.env.PORT || 5000
 const io = require('socket.io')(server)
+var mongoose = require('mongoose')
+require('dotenv').config()
 var clients = {}
 
 // client id as keys and list of messages as values
 // the lists will be filled with pending messages
 // for the users of the corresponding id to receive once the user has signed in
 var clientMessages = {}
+
+const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
+localHostURI = 'mongodb://localhost/chat'
+
+mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true,} , (err) => {
+  if (err) throw err
+  else
+  {
+    console.log('connected to db!')
+  }
+})
+
+var chatSchema = new mongoose.Schema({
+  messages: Array,
+  userId: String,
+})
+
+var chat = mongoose.model('Message', chatSchema)
 
 // middleware
 app.use(express.json())
@@ -23,7 +44,18 @@ io.on("connection", socket =>
   {
     console.log(`${id} has signed in to dm chat`)
     clients[id] = socket
-    // console.log(clients);
+
+    // retrieve messages sent to you that were saved in mongodb
+    chat.find({userId: id}, (err, docs) => {
+      if (err) { console.log(err); }
+      else
+      {
+        console.log('sending old messages:')
+        console.log(docs.length);
+        console.log(docs);
+        clients[id].emit('message', docs.messages)
+      }
+    })
 
     // if there were messages previous that need to be carried
     // over, do so now
@@ -51,28 +83,36 @@ io.on("connection", socket =>
   socket.on('message', (msg) =>
   {
     // console.log(`type of msg is ${typeof(msg)}`)
-    let targetId = msg.targetId
+    let receiverId = msg.targetId
     // clients[targetId] = socket
 
     // null check
-    if (!clientMessages[targetId])
+    if (!clientMessages[receiverId])
     {
-      clientMessages[targetId] = []
+      clientMessages[receiverId] = []
     }
 
     // maintain list of msg objects for the receiver to
     // receive once he/she is signed in (i.e. enters the dm chat)
-    clientMessages[targetId].push(msg)
+    clientMessages[receiverId].push(msg)
 
     // null check before sending to target
-    if (clients[targetId])
+    if (clients[receiverId])
     {
-      // sends off messages and assumes the front-end saves it in its own way
-      clients[targetId].emit('message', clientMessages[targetId])
-      console.log(`sending message to user ${targetId}`)
+      var newMsg = new chat({messages: clientMessages[receiverId], userId: receiverId})
+      newMsg.save((err, result) => {
+        if (err) console.log(err)
+        else
+        {
+          console.log(result)
+          // sends off messages and assumes the front-end saves it in its own way
+          clients[receiverId].emit('message', clientMessages[receiverId])
+          console.log(`sending message to user ${receiverId}`)
 
-      // clear array
-      clientMessages[targetId].splice(0, clientMessages[targetId].length)
+          // clear array
+          clientMessages[receiverId].splice(0, clientMessages[receiverId].length)
+        }
+      })
     }
     else
     {
