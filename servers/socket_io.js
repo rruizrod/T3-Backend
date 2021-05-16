@@ -10,21 +10,19 @@ var clients = {}
 // client id as keys and list of messages as values
 // the lists will be filled with pending messages
 // for the users of the corresponding id to receive once the user has signed in
-var clientMessages = {}
+// var clientMessages = {}
 
 const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
 
-localHostURI = 'mongodb://localhost/chat'
-
 //#region mongoose init
-mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false,} , (err) => {
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false, }, (err) =>
+{
   if (err) throw err
   else
   {
     console.log('connected to db!')
   }
 })
-
 
 var chatSchema = new mongoose.Schema({
   messages: Array,
@@ -50,78 +48,56 @@ io.on("connection", socket =>
     clients[id] = socket
 
     // retrieve messages sent to you that were saved in mongodb
-    chat.find({userId: id}, (err, docs) => {
+    chat.find({ userId: id }, (err, docs) =>
+    {
       if (err) { console.log(err); }
       else
       {
         console.log('sending old messages:')
-        console.log(docs.length);
-        console.log(docs);
-        clients[id].emit('message', docs.messages)
+        console.log(`there are ${docs.length} messages for you`)
+
+        // retrieve message objects from docs
+        var lst = docs.map((o) => o.messages)
+        console.log(lst)
+        // todo find a way to have one saved query per user
+
+        for (var lstOfMsgObjs of lst)
+        {
+          // send to frontend
+          clients[id].emit('message', lstOfMsgObjs)
+        }
       }
     })
 
-    // if there were messages previous that need to be carried
-    // over, do so now
-    if (clientMessages[id])
+    // DONE todo find a way to delete messages in the mongodb cluster after they have been sent DONE (change to deleteOne once we only have one object in db per user-user interaction)
+    chat.deleteMany({ userId: id }, (err) =>
     {
-      clientMessages[id] = [...clientMessages[id]]
-    }
-    else
-    {
-      clientMessages[id] = []
-    }
+      if (err) throw err
 
-    // load contents of array into user's chat list on the front end
-    if (clientMessages[id].length > 0)
-    {
-      console.log(`loading messages to user ${id}`)
-      clients[id].emit('message', clientMessages[id])
-
-      // clear array
-      clientMessages[id].splice(0, clientMessages[id].length)
-    }
+      console.log(`pending messages to user: ${id} are now sent to its rightful user and deleted from the backend nosql database`)
+    })
   })
 
   // message from sender
   socket.on('message', (msg) =>
   {
-    // console.log(`type of msg is ${typeof(msg)}`)
+    // format of every msg arg: {'message': message, 'sourceId': sourceId, 'targetId': targetId}
+
     let receiverId = msg.targetId
-    // clients[targetId] = socket
 
-    // null check
-    if (!clientMessages[receiverId])
+    // probably could have just passed in msg.message instead of entire msg
+    var newMsg = new chat({ messages: msg, userId: receiverId })
+
+    // saves a new object everytime a new message is sent (maybe we shouldn't do this if we only want one object for every user-user interaction?)
+    newMsg.save((err, result) =>
     {
-      clientMessages[receiverId] = []
-    }
-
-    // maintain list of msg objects for the receiver to
-    // receive once he/she is signed in (i.e. enters the dm chat)
-    clientMessages[receiverId].push(msg)
-
-    // null check before sending to target
-    if (clients[receiverId])
-    {
-      var newMsg = new chat({messages: clientMessages[receiverId], userId: receiverId})
-      newMsg.save((err, result) => {
-        if (err) console.log(err)
-        else
-        {
-          console.log(result)
-          // sends off messages and assumes the front-end saves it in its own way
-          clients[receiverId].emit('message', clientMessages[receiverId])
-          console.log(`sending message to user ${receiverId}`)
-
-          // clear array
-          clientMessages[receiverId].splice(0, clientMessages[receiverId].length)
-        }
-      })
-    }
-    else
-    {
-      console.log('receiver most likely isn\'t signed in')
-    }
+      if (err) console.log(err)
+      else
+      {
+        console.log(result)
+        console.log(`saving message to db for receiver: ${receiverId}`)
+      }
+    })
 
   })
 
