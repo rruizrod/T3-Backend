@@ -12,11 +12,12 @@ var clients = {}
 // for the users of the corresponding id to receive once the user has signed in
 var clientMessages = {}
 
-const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
 
 localHostURI = 'mongodb://localhost/chat'
 
-mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true,} , (err) => {
+//#region mongoose init
+mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false,} , (err) => {
   if (err) throw err
   else
   {
@@ -24,12 +25,15 @@ mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreat
   }
 })
 
+
 var chatSchema = new mongoose.Schema({
   messages: Array,
   userId: String,
 })
 
 var chat = mongoose.model('Message', chatSchema)
+//#endregion
+
 
 // middleware
 app.use(express.json())
