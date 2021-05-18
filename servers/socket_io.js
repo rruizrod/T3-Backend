@@ -7,10 +7,6 @@ var mongoose = require('mongoose')
 require('dotenv').config()
 var clients = {}
 
-// client id as keys and list of messages as values
-// the lists will be filled with pending messages
-// for the users of the corresponding id to receive once the user has signed in
-// var clientMessages = {}
 
 const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
 
@@ -24,6 +20,9 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
   }
 })
 
+// imported backlog model
+const Backlog = require('../models/backlog')
+
 var chatSchema = new mongoose.Schema({
   messages: Array,
   userId: String,
@@ -32,6 +31,44 @@ var chatSchema = new mongoose.Schema({
 var chat = mongoose.model('Message', chatSchema)
 //#endregion
 
+const getPending = async (id) => {
+  const currBacklog = await Backlog.findOne({uid: id})
+
+  return currBacklog ? currBacklog.messages : null
+}
+
+const clearMessages = async (id) => {
+  const currBacklog = await Backlog.findOne({uid: id})
+  if (currBacklog == null) return
+  currBacklog.messages = []
+  currBacklog.save()
+}
+
+const createUserBackLog = async (id, message) => {
+  const backlog = await Backlog.findOne({uid: id})
+
+  if(backlog == null || backlog.length == 0)
+  {
+    const newBacklog = new Backlog({uid: id, messages: []})
+    newBacklog.messages.push(message)
+    newBacklog.save()
+    console.log('added new receiverID into db')
+    return
+  }
+
+  // console.log(backlog);
+  backlog.messages.push(message)
+  backlog.save()
+  console.log('saved message')
+}
+
+/*
+TODO
+add a sender ID (Specify on connection)
+i.e. handle case when receiver isn't signed in and is signed in
+Send just messages from sourceID and clear just those messages
+messages.filter((m) => m.senderId === senderId)
+*/
 
 // middleware
 app.use(express.json())
@@ -42,40 +79,21 @@ io.on("connection", socket =>
 
   // receive from frontend client (socket.on() ...)
   // socket.on('/test', (msg) => console.log(msg))
-  socket.on('signin', (id) =>
+  socket.on('signin', async (id) =>
   {
     console.log(`${id} has signed in to dm chat`)
     clients[id] = socket
 
-    // retrieve messages sent to you that were saved in mongodb
-    chat.find({ userId: id }, (err, docs) =>
-    {
-      if (err) { console.log(err); }
-      else
-      {
-        console.log('sending old messages:')
-        console.log(`there are ${docs.length} messages for you`)
+    const messages = await getPending(id)
+    console.log(`messages: ${messages}`)
+    console.log(`data type of messages: ${typeof(messages)}`)
+    clients[id].emit('message', messages)
+    // for(var msg of messages){
+    //   //clients[id].emit('message', [msg.message])
+    //   console.log(msg)
+    // }
 
-        // retrieve message objects from docs
-        var lst = docs.map((o) => o.messages)
-        console.log(lst)
-        // todo find a way to have one saved query per user
-
-        for (var lstOfMsgObjs of lst)
-        {
-          // send to frontend
-          clients[id].emit('message', lstOfMsgObjs)
-        }
-      }
-    })
-
-    // DONE todo find a way to delete messages in the mongodb cluster after they have been sent DONE (change to deleteOne once we only have one object in db per user-user interaction)
-    chat.deleteMany({ userId: id }, (err) =>
-    {
-      if (err) throw err
-
-      console.log(`pending messages to user: ${id} are now sent to its rightful user and deleted from the backend nosql database`)
-    })
+    clearMessages(id)
   })
 
   // message from sender
@@ -85,20 +103,14 @@ io.on("connection", socket =>
 
     let receiverId = msg.targetId
 
-    // probably could have just passed in msg.message instead of entire msg
-    var newMsg = new chat({ messages: msg, userId: receiverId })
-
-    // saves a new object everytime a new message is sent (maybe we shouldn't do this if we only want one object for every user-user interaction?)
-    newMsg.save((err, result) =>
+    if(!clients[receiverId])
     {
-      if (err) console.log(err)
-      else
-      {
-        console.log(result)
-        console.log(`saving message to db for receiver: ${receiverId}`)
-      }
-    })
-
+      createUserBackLog(receiverId, msg)
+    }
+    else
+    {
+      clients[id].emit('message', [msg])
+    }
   })
 
   socket.on('signedout', (id) =>
@@ -107,8 +119,8 @@ io.on("connection", socket =>
     delete clients[id]
     // console.log(clients);
   })
-
 })
+
 server.listen(port, "0.0.0.0", () =>
 {
   console.log(`server started on port ${port}`)

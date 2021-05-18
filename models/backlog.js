@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
+
 const backlogSchema = new mongoose.Schema({
   uid: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +18,7 @@ const backlogSchema = new mongoose.Schema({
   ]
 })
 
-blockSchema.set('toJSON', {
+backlogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete uid
@@ -28,4 +29,4 @@ backlogSchema.plugin(uniqueValidator)
 
 const Backlog = mongoose.model('Backlog', backlogSchema)
 
-module.exports(Backlog)
+module.exports = Backlog
