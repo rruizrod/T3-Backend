@@ -6,7 +6,7 @@ const io = require('socket.io')(server)
 var mongoose = require('mongoose')
 require('dotenv').config()
 var signedInClients = {}
-
+// hi
 
 //#region mongoose init
 const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
