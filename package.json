@@ -2,12 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backend for KnightHacks Spring 2021 Team 3 Application",
-  "main": "index.js",
+  "main": "socket_io.js",
   "scripts": {
-    "start": "node ./servers/socket_io",
+    "start": "node socket_io.js",
     "dev": "NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test jest --verbose --runInBand",
-    "devStart": "nodemon ./servers/socket_io.js"
+    "devStart": "nodemon socket_io.js"
   },
   "author": "Ricardo Ruiz",
   "license": "UNLICENSED",

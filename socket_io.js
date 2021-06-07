@@ -6,7 +6,7 @@ const io = require('socket.io')(server)
 var mongoose = require('mongoose')
 require('dotenv').config()
 // imported backlog model
-const Backlog = require('../models/backlog')
+const Backlog = require('./models/backlog')
 var signedInClients = {}
 
 
