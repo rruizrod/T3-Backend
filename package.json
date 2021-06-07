@@ -4,7 +4,7 @@
   "description": "Backend for KnightHacks Spring 2021 Team 3 Application",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node index.js",
+    "start": "node ./servers/socket_io.js",
     "dev": "NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test jest --verbose --runInBand",
     "devStart": "nodemon ./servers/socket_io.js"

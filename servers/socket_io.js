@@ -9,6 +9,10 @@ require('dotenv').config()
 const Backlog = require('../models/backlog')
 var signedInClients = {}
 
+/**
+ * start: NODE_ENV=production node index.js
+ */
+
 //#region mongoose init
 const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
 
