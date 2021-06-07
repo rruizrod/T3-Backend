@@ -1,12 +1,11 @@
-const app = require('./app')
+const app = require('./app').app
+const express = require('./app').express
 const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
+const server = http.createServer(app)
 const io = require('socket.io')(server)
 var mongoose = require('mongoose')
-
-const server = http.createServer(app)
-
 
 require('dotenv').config()
 // imported backlog model
@@ -31,15 +30,6 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
     console.log('connected to db!')
   }
 })
-
-
-
-// var chatSchema = new mongoose.Schema({
-//   messages: Array,
-//   userId: String,
-// })
-
-// var chat = mongoose.model('Message', chatSchema)
 //#endregion
 
 const getPending = async (id) =>
@@ -49,7 +39,7 @@ const getPending = async (id) =>
   return currBacklog
 }
 
-// todo only clear the messages that have been filtered out DONE
+// only clears the messages that have been filtered out
 const clearMessages = async (id, leftOvers) =>
 {
   const currBacklog = await Backlog.findOne({ uid: id })
@@ -171,15 +161,16 @@ io.on("connection", socket =>
 })
 
 
-
-
-
-
-
-
+//#region PORT listeners
+// app.listen(config.PORT)
 
 
 server.listen(config.PORT, () =>
 {
   logger.info(`Server running on port ${config.PORT}`)
 })
+//#endregion
+
+
+
+

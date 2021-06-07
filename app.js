@@ -32,4 +32,7 @@ app.use('/docs', swaggerRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
-module.exports = app
+module.exports = {
+  app,
+  express,
+}
