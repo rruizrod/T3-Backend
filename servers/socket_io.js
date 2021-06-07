@@ -89,6 +89,8 @@ io.on("connection", socket =>
 
     const getBackLog = await getPending(activeUserId)
     console.log(`backlog data: ${getBackLog}`);
+
+
     var messages = getBackLog ? getBackLog.messages : {}
     messages = Object.values(messages);
     // console.log(`data type of messages: ${typeof(messages)}`)
