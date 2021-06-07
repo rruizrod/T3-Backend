@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backend for KnightHacks Spring 2021 Team 3 Application",
-  "main": "socket_io.js",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "NODE_ENV=development nodemon index.js",
