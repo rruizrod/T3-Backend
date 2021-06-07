@@ -9,6 +9,13 @@ require('dotenv').config()
 const Backlog = require('../models/backlog')
 var signedInClients = {}
 
+
+// debug check
+app.route('/checker').get((req, res) =>
+{
+  return res.json('Your app is working')
+})
+
 /**
  * start: NODE_ENV=production node index.js
  */
@@ -35,26 +42,29 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
 // var chat = mongoose.model('Message', chatSchema)
 //#endregion
 
-const getPending = async (id) => {
-  const currBacklog = await Backlog.findOne({uid: id})
+const getPending = async (id) =>
+{
+  const currBacklog = await Backlog.findOne({ uid: id })
 
   return currBacklog
 }
 
 // todo only clear the messages that have been filtered out DONE
-const clearMessages = async (id, leftOvers) => {
-  const currBacklog = await Backlog.findOne({uid: id})
+const clearMessages = async (id, leftOvers) =>
+{
+  const currBacklog = await Backlog.findOne({ uid: id })
   if (currBacklog == null) return
   currBacklog.messages = leftOvers
   currBacklog.save()
 }
 
-const createUserBackLog = async (id, message) => {
-  const backlog = await Backlog.findOne({uid: id})
+const createUserBackLog = async (id, message) =>
+{
+  const backlog = await Backlog.findOne({ uid: id })
 
-  if(backlog == null || backlog.length == 0)
+  if (backlog == null || backlog.length == 0)
   {
-    const newBacklog = new Backlog({uid: id, messages: []})
+    const newBacklog = new Backlog({ uid: id, messages: [] })
     newBacklog.messages.push(message)
     newBacklog.save()
     console.log('added new receiverID into db')
@@ -127,7 +137,7 @@ io.on("connection", socket =>
 
     // if they're in the clients obj, then they're
     // signed in. Otherwise, they're not
-    if(!signedInClients[receiverId])
+    if (!signedInClients[receiverId])
     {
       //#region IMPORTANT NOTE
 
