@@ -5,8 +5,9 @@ const port = process.env.PORT || 5000
 const io = require('socket.io')(server)
 var mongoose = require('mongoose')
 require('dotenv').config()
+// imported backlog model
+const Backlog = require('../models/backlog')
 var signedInClients = {}
-
 
 //#region mongoose init
 const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
@@ -20,8 +21,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
   }
 })
 
-// imported backlog model
-const Backlog = require('../models/backlog')
+
 
 // var chatSchema = new mongoose.Schema({
 //   messages: Array,
