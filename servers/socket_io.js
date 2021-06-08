@@ -7,9 +7,16 @@ var mongoose = require('mongoose')
 require('dotenv').config()
 var signedInClients = {}
 
+const cors = require('cors')
+const middleware = require('../utils/middleware')
+const logger = require('../utils/logger')
+
+app.use(cors())
+app.use(express.json())
+app.use(middleware.requestLogger)
 
 //#region mongoose init
-const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
+const uri = process.env.MONGODB_URI; 
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false, }, (err) =>
 {
@@ -22,6 +29,14 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
 
 // imported backlog model
 const Backlog = require('../models/backlog')
+
+
+app.get('/', (req, res) => {
+	res.send( "<h1>It's Working</h1>");
+});
+
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 // var chatSchema = new mongoose.Schema({
 //   messages: Array,
@@ -142,7 +157,7 @@ io.on("connection", socket =>
     }
     else
     {
-      socket.emit('message', [msg])
+      signedInClients[receiverId].emit('message', [msg]);
     }
   })
 
@@ -154,7 +169,7 @@ io.on("connection", socket =>
   })
 })
 
-server.listen(port, "0.0.0.0", () =>
+server.listen(port, () =>
 {
   console.log(`server started on port ${port}`)
 })
