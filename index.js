@@ -1,5 +1,7 @@
-const app = require('./app').app
-const express = require('./app').express
+// const app = require('./app').app
+// const express = require('./app').express
+const express = require('express')
+const app = express()
 const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
@@ -14,7 +16,7 @@ var signedInClients = {}
 
 
 // debug check
-app.route('/checker').get((req, res) =>
+app.get('/checker', (req, res) =>
 {
   return res.json('Your app is working')
 })
@@ -69,7 +71,7 @@ const createUserBackLog = async (id, message) =>
 }
 
 /*
-TODO
+TODO DONE
 add a sender ID (Specify on connection)
 i.e. handle case when receiver isn't signed in and is signed in
 Send just messages from sourceID and clear just those messages
