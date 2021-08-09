@@ -296,6 +296,12 @@ usersRouter.post('/:id/match/:match', async (request, response) => {
  *          description: Users ID from database.
  *          schema:
  *            type: string
+ *        - in: path
+ *          name: match
+ *          required: true
+ *          description: MatchID
+ *          schema:
+ *            type: string
  *      responses:
  *        204:
  *          description: Found User. Deleted from DB.
@@ -308,10 +314,10 @@ usersRouter.delete('/:id/match/:match', async (request, response) => {
 
   const user = await User.findById(id)
   const matchedUser = await User.findById(match)
+  
+  user.matches = user.matches.filter(otherUser =>  otherUser != matchedUser.id)
 
-  user.matches = user.matches.filter(otherUser => otherUser != matchedUser)
-
-  user.save()
+  await  user.save()
   return response.send({message: "You removed a user"})
 })
 //#endregion
