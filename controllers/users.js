@@ -279,6 +279,43 @@ usersRouter.post('/:id/match/:match', async (request, response) => {
   return response.send({message: "User liked!"})
 })
 
+
+//#region remove user from matches array
+//? should only call this in the frontend if both users are already matched (i.e. from the contacts page)
+//--- ENDPOINT: Delete matched user ---
+/**
+ * @swagger
+ * /api/users/{id}/match/{match}:
+ *    delete:
+ *      summary: Delete a matched user from the current user's matches array information by ID.
+ *      tags: [Users]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          description: Users ID from database.
+ *          schema:
+ *            type: string
+ *      responses:
+ *        204:
+ *          description: Found User. Deleted from DB.
+ */
+usersRouter.delete('/:id/match/:match', async (request, response) => {
+  const id = request.params.id
+  const match = request.params.match
+
+  if(id === match) {return response.status(500).end()}
+
+  const user = await User.findById(id)
+  const matchedUser = await User.findById(match)
+
+  user.matches = user.matches.filter(otherUser => otherUser != matchedUser)
+
+  user.save()
+  return response.send({message: "You removed a user"})
+})
+//#endregion
+
 //--- ENDPOINT: Update User Profile by ID ---
 /**
  * @swagger
