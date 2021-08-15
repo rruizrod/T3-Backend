@@ -67,7 +67,7 @@ i.e. handle case when receiver isn't signed in and is signed in
 Send just messages from sourceID and clear just those messages
 messages.filter((m) => m.senderID === senderID)
 */
- 
+
 // middleware
 io.on("connection", socket =>
 {
@@ -84,7 +84,6 @@ io.on("connection", socket =>
 
     const getBackLog = await getPending(activeUserId)
     console.log(`backlog data: ${getBackLog}`);
-
 
     var messages = getBackLog ? getBackLog.messages : {}
     messages = Object.values(messages);
