@@ -1,7 +1,4 @@
-// const app = require('./app').app
-// const express = require('./app').express
-const express = require('express')
-const app = express()
+const app = require('./app')
 const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
@@ -14,24 +11,16 @@ require('dotenv').config()
 const Backlog = require('./models/backlog')
 var signedInClients = {}
 
-
-// debug check
-app.get('/checker', (req, res) =>
-{
-  return res.json('Your app is working')
-})
-
 //#region mongoose init
-const uri = `mongodb+srv://leozhang1:${process.env.PASSWORD}@cluster0.pti3a.mongodb.net/myFirstDatabase?retryWrites=true`;
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false, }, (err) =>
-{
-  if (err) throw err
-  else
-  {
-    console.log('connected to db!')
-  }
-})
+// mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false, }, (err) =>
+// {
+//   if (err) throw err
+//   else
+//   {
+//     console.log('connected to db!')
+//   }
+// })
 //#endregion
 
 const getPending = async (id) =>
@@ -79,7 +68,6 @@ messages.filter((m) => m.senderID === senderID)
 */
  
 // middleware
-app.use(express.json())
 io.on("connection", socket =>
 {
   console.log("connected")
@@ -93,7 +81,7 @@ io.on("connection", socket =>
     console.log(`${activeUserId} has signed in to dm chat with ${otherUserId}`)
     signedInClients[activeUserId] = socket
 
-    const getBackLog = await getPending(activeUserId)
+    const getBackLog = getPending(activeUserId)
     console.log(`backlog data: ${getBackLog}`);
 
 
@@ -150,7 +138,7 @@ io.on("connection", socket =>
     }
     else
     {
-      socket.emit('message', [msg])
+      signedInClients[receiverId].emit('message', [msg])
     }
   })
 
@@ -158,7 +146,6 @@ io.on("connection", socket =>
   {
     console.log(`${id} has signed out of dm chat`)
     delete signedInClients[id]
-    // console.log(clients);
   })
 })
 
@@ -172,6 +159,7 @@ server.listen(config.PORT, () =>
   logger.info(`Server running on port ${config.PORT}`)
 })
 //#endregion
+
 
 
 
