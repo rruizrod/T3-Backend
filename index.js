@@ -1,5 +1,4 @@
 const app = require('./app')
-const express = require('express')
 const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
@@ -67,7 +66,7 @@ i.e. handle case when receiver isn't signed in and is signed in
 Send just messages from sourceID and clear just those messages
 messages.filter((m) => m.senderID === senderID)
 */
- 
+
 // middleware
 io.on("connection", socket =>
 {
@@ -82,9 +81,8 @@ io.on("connection", socket =>
     console.log(`${activeUserId} has signed in to dm chat with ${otherUserId}`)
     signedInClients[activeUserId] = socket
 
-    const getBackLog = await getPending(activeUserId)
+    const getBackLog = getPending(activeUserId)
     console.log(`backlog data: ${getBackLog}`);
-
 
     var messages = getBackLog ? getBackLog.messages : {}
     messages = Object.values(messages);
@@ -139,7 +137,7 @@ io.on("connection", socket =>
     }
     else
     {
-      socket.emit('message', [msg])
+      signedInClients[receiverId].emit('message', [msg])
     }
   })
 
@@ -147,7 +145,6 @@ io.on("connection", socket =>
   {
     console.log(`${id} has signed out of dm chat`)
     delete signedInClients[id]
-    // console.log(clients);
   })
 })
 
